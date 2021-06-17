@@ -1,5 +1,4 @@
 import csv
-from time import time
 
 import numpy as np
 
@@ -58,11 +57,11 @@ def solve_knapsack(data):
             data, max_cost = increase_scale(data, max_cost)
             oom_increase *= 10
         entry["cost"] = round(entry["cost"])
-    solution_array = generate_solving_array(data, max_cost, oom_increase)
-    solution_index, optimal_value, optimal_spending = get_solution_from_array(solution_array, data, oom_increase)
+    solution_array = generate_solving_array(data, max_cost)
+    solution_index, optimal_value, optimal_spending = get_solution_from_array(solution_array, data)
     solution = ", ".join([data[index]["name"] for index in solution_index])
     print(f"By buying {solution},")
-    print(f"You'll spend {optimal_spending/oom_increase} and earn {round(optimal_value, 2)}")
+    print(f"You'll spend {optimal_spending/oom_increase} and earn {round(optimal_value/oom_increase, 2)}")
 
 
 # def solve_knapsack_greedy(data):
@@ -80,7 +79,7 @@ def solve_knapsack(data):
 #     return solution[0]["profit"]
 
 
-def generate_solving_array(data, max_cost, magnitude_increase):
+def generate_solving_array(data, max_cost):
     """
     Use dynamic programming to generate an array that contains the optimal value and can be used to determine how to
     reach said value."""
@@ -90,7 +89,7 @@ def generate_solving_array(data, max_cost, magnitude_increase):
     array[0] = np.zeros(column_number)
     for i in range(1, len(array)):
         cost = data[i - 1]["cost"]
-        profit = int(data[i - 1]["cost"] * data[i - 1]["profit"] / magnitude_increase) / 100
+        profit = data[i - 1]["cost"] * data[i - 1]["profit"] / 100
         for j in range(column_number):
             if j >= cost:
                 array[i, j] = max(array[i - 1, j],
@@ -100,18 +99,18 @@ def generate_solving_array(data, max_cost, magnitude_increase):
     return array
 
 
-def get_solution_from_array(array, data, magnitude_increase):
+def get_solution_from_array(array, data):
     """Get the combination of actions providing the optimal value."""
     solution_index = []
     optimal_value = array[-1][-1]
     fitting_values = np.asarray(array == optimal_value).nonzero()  # Some kind of magical formula. asarray
-    # gives an array of the same dimension as the input, but with True or False, depending if they fulfill the
+    # gives an array of the same dimensions as the input, but with True or False, depending if they fulfill the
     # condition or not,  then nonzero() removes all values equal to 0 (here, False).
     initial_row_index = fitting_values[0][0]
     column_index = optimal_spending = fitting_values[1][0]
     for i in range(initial_row_index, -1, -1):
         cost = data[i - 1]["cost"]
-        profit = int(data[i - 1]["cost"] * data[i - 1]["profit"] / magnitude_increase) / 100
+        profit = data[i - 1]["cost"] * data[i - 1]["profit"] / 100
         if column_index >= cost:
             if array[i - 1, column_index - cost] + profit >= array[i - 1, column_index]:
                 solution_index.append(i - 1)
@@ -123,13 +122,10 @@ def main():
     keep_going = True
     while keep_going:
         file_name = input("What is the name of the csv file containing the data (do not include the extension)?")
-        beginning = time()
         data = clean_data(read_csv_file(file_name))
         # minimum_profit = solve_knapsack_greedy(data)
         # data = reduce_data(data, minimum_profit)
         solve_knapsack(data)
-        end = time()
-        print(beginning - end)
         more = input("Do you want to solve another set of data? (y/n)")
         if more != "y":
             keep_going = False
