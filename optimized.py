@@ -26,6 +26,11 @@ def clean_data(data):
     return [entry for entry in data if is_valid(entry)]
 
 
+# def reduce_data(data, min_profit):
+#     """Remove entries the profit of which is under a certain value"""
+#     return [entry for entry in data if entry["profit"] >= min_profit]
+
+
 def is_valid(entry):
     """Check if the profit and the cost of the entry are valid."""
     if MAX_COST < entry["cost"] or entry["cost"] <= 0 or entry["profit"] <= 0:
@@ -60,15 +65,19 @@ def solve_knapsack(data):
     print(f"You'll spend {optimal_spending/oom_increase} and earn {round(optimal_value, 2)}")
 
 
-def solve_knapscak_greedy(data):
-    data.sort(key=lambda element: element["profit"], reverse=True)
-    current_cost = 0
-    solution = []
-    for entry in data:
-        if entry["cost"] + current_cost < 500:
-            solution.append(entry)
-    solution.sort(key=lambda element: element["profit"])
-    return solution
+# def solve_knapsack_greedy(data):
+#     """Use a greedy algorithm to solve the knapsack problem.
+#
+#     It doesn't provide a perfect solution, it is only used to provide a minimum value for the profit of each item."""
+#     data.sort(key=lambda element: element["profit"], reverse=True)
+#     current_cost = 0
+#     solution = []
+#     for entry in data:
+#         if entry["cost"] + current_cost < 500:
+#             solution.append(entry)
+#             current_cost += entry["cost"]
+#     solution.sort(key=lambda element: element["profit"])
+#     return solution[0]["profit"]
 
 
 def generate_solving_array(data, max_cost, magnitude_increase):
@@ -116,6 +125,8 @@ def main():
         file_name = input("What is the name of the csv file containing the data (do not include the extension)?")
         beginning = time()
         data = clean_data(read_csv_file(file_name))
+        # minimum_profit = solve_knapsack_greedy(data)
+        # data = reduce_data(data, minimum_profit)
         solve_knapsack(data)
         end = time()
         print(beginning - end)
