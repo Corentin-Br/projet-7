@@ -1,6 +1,6 @@
 class Action:
     def __init__(self, index, cost, benefit):
-        self.index = index
+        self.index = index + 1
         self.cost = cost
         self.benefit = benefit
 
