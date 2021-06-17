@@ -23,10 +23,7 @@ class Wallet:
         return [action.index for action in self.actions]
 
     def has_place_for(self, action):
-        if self.total_cost + action.cost > self.max_price:
-            return False
-        else:
-            return True
+        return False if self.total_cost + action.cost > self.max_price else True
 
 
 def find_valid_wallets(actions, max_price):
@@ -43,8 +40,8 @@ def find_valid_wallets(actions, max_price):
 
 
 def find_best_wallet(wallets):
-    wallets.sort(key=lambda wallet: wallet.gain, reverse=True)
-    return wallets[0]
+    best_wallets = sorted(wallets, key=lambda wallet: wallet.gain, reverse=True)
+    return best_wallets[0]
 
 
 def main():
